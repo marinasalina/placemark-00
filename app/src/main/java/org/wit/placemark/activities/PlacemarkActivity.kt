@@ -16,7 +16,7 @@ class PlacemarkActivity : AppCompatActivity() {
     private lateinit var binding: ActivityPlacemarkBinding
     var placemark = PlacemarkModel()
     //create model that holds tit,e and description
-    var app : MainApp? = null
+    lateinit var app : MainApp
 //Android calls onCreate() when the activity first starts.
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
