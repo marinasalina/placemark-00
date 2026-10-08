@@ -1,17 +1,24 @@
 package org.wit.placemark.activities
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import org.wit.placemark.R
+import androidx.appcompat.app.AppCompatActivity
+import org.wit.placemark.databinding.ActivityPlacemarkListBinding
 import org.wit.placemark.main.MainApp
-//retrieving and storing a reference to the MainApp object (for future use).
+
 class PlacemarkListActivity : AppCompatActivity() {
-//
+
+    private lateinit var binding: ActivityPlacemarkListBinding
     lateinit var app: MainApp
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_placemark_list)
+
+        binding = ActivityPlacemarkListBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
         app = application as MainApp
+
+        setSupportActionBar(binding.toolbar)
+        supportActionBar?.title = "Placemarks"
     }
 }

@@ -11,22 +11,24 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Placemark">
-        <!-- the list of placemark -->
-        <activity android:name=".activities.PlacemarkListActivity"
+
+        <!-- Opens first: title, description and Add button -->
+        <activity
+            android:name=".activities.PlacemarkActivity"
             android:exported="true">
+
             <intent-filter>
-                <!-- main marks this screen as an entry point to the app-->
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
-            <meta-data android:name="android.app.lib_name"
-                android:value="" />
         </activity>
-        <!--The form to adding placemark-->
-        <activity android:name=".activities.PlacemarkActivity">
-            <meta-data android:name="android.app.lib_name"
-                android:value="" />
-        </activity>
+
+        <!-- List screen -->
+        <activity
+            android:name=".activities.PlacemarkListActivity"
+            android:exported="false" />
+
     </application>
+
 </manifest>

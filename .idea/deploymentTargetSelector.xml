@@ -26,10 +26,6 @@
         <option name="selectionMode" value="DROPDOWN" />
         <DialogSelection />
       </SelectionState>
-      <SelectionState runConfigName="PlacemarkActivity (9)">
-        <option name="selectionMode" value="DROPDOWN" />
-        <DialogSelection />
-      </SelectionState>
       <SelectionState runConfigName="PlacemarkActivity (2)">
         <option name="selectionMode" value="DROPDOWN" />
         <DialogSelection />
@@ -39,6 +35,10 @@
         <DialogSelection />
       </SelectionState>
       <SelectionState runConfigName="PlacemarkActivity (4)">
+        <option name="selectionMode" value="DROPDOWN" />
+        <DialogSelection />
+      </SelectionState>
+      <SelectionState runConfigName="PlacemarkActivity (6)">
         <option name="selectionMode" value="DROPDOWN" />
         <DialogSelection />
       </SelectionState>
