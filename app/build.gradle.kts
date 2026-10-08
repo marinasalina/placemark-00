@@ -1,7 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.parcelize)
 }
-
 android {
     namespace = "org.wit.placemark"
     compileSdk {
