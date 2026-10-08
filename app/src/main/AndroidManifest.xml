@@ -12,9 +12,8 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Placemark">
 
-        <!-- Opens first: title, description and Add button -->
         <activity
-            android:name=".activities.PlacemarkActivity"
+            android:name=".activities.PlacemarkListActivity"
             android:exported="true">
 
             <intent-filter>
@@ -24,9 +23,8 @@
 
         </activity>
 
-        <!-- List screen -->
         <activity
-            android:name=".activities.PlacemarkListActivity"
+            android:name=".activities.PlacemarkActivity"
             android:exported="false" />
 
     </application>
