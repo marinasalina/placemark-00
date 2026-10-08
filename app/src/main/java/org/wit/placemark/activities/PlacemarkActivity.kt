@@ -29,26 +29,23 @@ class PlacemarkActivity : AppCompatActivity() {
     //write message to Logcat
         i("Placemark Activity started...")
     //The code inside this listener runs each time the user presses Add.
-        binding.btnAdd.setOnClickListener() {
-            //Read both text fields and puts their values into the model
-            placemark.title = binding.placemarkTitle.text.toString()
-            placemark.description = binding.description.text.toString()
-            //Check the title and add the coppy
-            if (placemark.title.isNotEmpty()) {
-                //app!! - it is app, not null
-                //copy()keeps previoisly added placemarks separate from model
-                app!!.placemarks.add(placemark.copy())
-                //Log every placemark
-                //$is the possition number
-                i("add Button Pressed: ${placemark}")
-                for (i in app!!.placemarks.indices)
-                { i("Placemark[$i]:${this.app!!.placemarks[i]}") }
+    binding.btnAdd.setOnClickListener() {
+        placemark.title = binding.placemarkTitle.text.toString()
+        placemark.description = binding.description.text.toString()
+        if (placemark.title.isNotEmpty()) {
+            app.placemarks.add(placemark.copy())
+            i("add Button Pressed: ${placemark}")
+            for (i in app.placemarks.indices) {
+                i("Placemark[$i]:${this.app.placemarks[i]}")
             }
-            else {
-                Snackbar.make(it,"Please Enter a title", Snackbar.LENGTH_LONG)
-                    .show()
-            }
+            setResult(RESULT_OK)
+            finish()
         }
+        else {
+            Snackbar.make(it,"Please Enter a title", Snackbar.LENGTH_LONG)
+                .show()
+        }
+    }
     }
 }
 

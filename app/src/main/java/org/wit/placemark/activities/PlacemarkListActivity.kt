@@ -12,7 +12,10 @@ import org.wit.placemark.databinding.ActivityPlacemarkListBinding
 import org.wit.placemark.databinding.CardPlacemarkBinding
 import org.wit.placemark.main.MainApp
 import org.wit.placemark.models.PlacemarkModel
-
+import android.app.Activity
+import android.content.Intent
+import android.view.MenuItem
+import androidx.activity.result.contract.ActivityResultContracts
 class PlacemarkListActivity : AppCompatActivity() {
 
     lateinit var app: MainApp
@@ -37,6 +40,26 @@ class PlacemarkListActivity : AppCompatActivity() {
         menuInflater.inflate(R.menu.menu_main, menu)
         return true
     }
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.item_add -> {
+                val launcherIntent = Intent(this, PlacemarkActivity::class.java)
+                getResult.launch(launcherIntent)
+            }
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+    private val getResult =
+        registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()
+        ) {
+            if (it.resultCode == Activity.RESULT_OK) {
+                (binding.recyclerView.adapter)?.
+                notifyItemRangeChanged(0,app.placemarks.size)
+            }
+        }
+
 }
 
 class PlacemarkAdapter(
@@ -71,5 +94,5 @@ class PlacemarkAdapter(
             binding.description.text = placemark.description
         }
     }
-}what is binding and recycle
+}
 
