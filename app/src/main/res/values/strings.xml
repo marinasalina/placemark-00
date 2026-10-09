@@ -5,5 +5,12 @@
     <string name="hint_placemarkDescription">Description </string>
     <string name="menu_addPlacemark">Add</string>
     <string name="menu_cancelPlacemark">Cancel</string>
+    <string name="save_placemark"> Save Placemark </string>
+    <string name="enter_placemark_title">Please enter a title</string>
+    <string name="button_addImage"> Add Image </string>
+
+    Snackbar
+    .make(it,"Please Enter a title", Snackbar.LENGTH_LONG)
+    .show()
 
 </resources>
