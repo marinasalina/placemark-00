@@ -1,8 +1,11 @@
 package org.wit.placemark.activities
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.snackbar.Snackbar
 import org.wit.placemark.R
@@ -10,9 +13,12 @@ import org.wit.placemark.databinding.ActivityPlacemarkBinding
 import org.wit.placemark.main.MainApp
 import org.wit.placemark.models.PlacemarkModel
 import timber.log.Timber.i
+
 class PlacemarkActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityPlacemarkBinding
+    private lateinit var imageIntentLauncher: ActivityResultLauncher<Intent>
+
     var placemark = PlacemarkModel()
     lateinit var app: MainApp
 
@@ -28,12 +34,26 @@ class PlacemarkActivity : AppCompatActivity() {
         setSupportActionBar(binding.toolbarAdd)
 
         app = application as MainApp
+
+        registerImagePickerCallback()
+
         binding.chooseImage.setOnClickListener {
-            i("Select image")
+            showImagePicker(imageIntentLauncher)
         }
+
         if (intent.hasExtra("placemark_edit")) {
             edit = true
-            placemark = intent.extras?.getParcelable("placemark_edit")!!
+
+            @Suppress("DEPRECATION")
+            val passedPlacemark =
+                intent.extras?.getParcelable<PlacemarkModel>("placemark_edit")
+
+            if (passedPlacemark == null) {
+                finish()
+                return
+            }
+
+            placemark = passedPlacemark
             binding.placemarkTitle.setText(placemark.title)
             binding.description.setText(placemark.description)
             binding.btnAdd.setText(R.string.save_placemark)
@@ -62,6 +82,37 @@ class PlacemarkActivity : AppCompatActivity() {
         }
     }
 
+    private fun showImagePicker(
+        launcher: ActivityResultLauncher<Intent>
+    ) {
+        val imageIntent = Intent(Intent.ACTION_GET_CONTENT).apply {
+            type = "image/*"
+            addCategory(Intent.CATEGORY_OPENABLE)
+        }
+
+        launcher.launch(
+            Intent.createChooser(imageIntent, "Select image")
+        )
+    }
+
+    private fun registerImagePickerCallback() {
+        imageIntentLauncher =
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult())
+            { result ->
+                when(result.resultCode){
+                    RESULT_OK -> {
+                        if (result.data != null) {
+                            i("Got Result ${result.data!!.data}")
+                            placemark.image = result.data!!.data!!
+                        } // end of if
+                    }
+                    RESULT_CANCELED -> { } else -> { }
+                }
+            }
+    }
+
+    }
+
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_placemark, menu)
         return true
@@ -74,6 +125,7 @@ class PlacemarkActivity : AppCompatActivity() {
                 return true
             }
         }
+
         return super.onOptionsItemSelected(item)
     }
 }
