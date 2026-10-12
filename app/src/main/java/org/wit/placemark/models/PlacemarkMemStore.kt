@@ -27,9 +27,11 @@ class PlacemarkMemStore : PlacemarkStore {
         if (foundPlacemark != null) {
             foundPlacemark.title = placemark.title
             foundPlacemark.description = placemark.description
+            foundPlacemark.image = placemark.image
             logAll()
         }
     }
+
 
     private fun logAll() {
         placemarks.forEach { i("$it") }

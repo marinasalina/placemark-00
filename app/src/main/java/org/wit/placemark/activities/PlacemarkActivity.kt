@@ -13,12 +13,14 @@ import org.wit.placemark.R
 import org.wit.placemark.databinding.ActivityPlacemarkBinding
 import org.wit.placemark.main.MainApp
 import org.wit.placemark.models.PlacemarkModel
+import android.net.Uri
 import timber.log.Timber.i
 
 class PlacemarkActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityPlacemarkBinding
     private lateinit var imageIntentLauncher: ActivityResultLauncher<Intent>
+    private lateinit var mapIntentLauncher: ActivityResultLauncher<Intent>
 
     var placemark = PlacemarkModel()
     lateinit var app: MainApp
@@ -37,6 +39,7 @@ class PlacemarkActivity : AppCompatActivity() {
         app = application as MainApp
 
         registerImagePickerCallback()
+        registerMapCallback()
 
         binding.chooseImage.setOnClickListener {
             showImagePicker(imageIntentLauncher)
@@ -58,8 +61,17 @@ class PlacemarkActivity : AppCompatActivity() {
             binding.placemarkTitle.setText(placemark.title)
             binding.description.setText(placemark.description)
             binding.btnAdd.setText(R.string.save_placemark)
-        }
+            if (placemark.image != Uri.EMPTY) {
+                Picasso.get()
+                    .load(placemark.image)
+                    .into(binding.placemarkImage)
 
+                binding.chooseImage.setText(R.string.change_placemark_image)
+            }
+        }
+        binding.placemarkLocation.setOnClickListener {
+            i ("Set Location Pressed")
+        }
         binding.btnAdd.setOnClickListener {
             placemark.title = binding.placemarkTitle.text.toString()
             placemark.description = binding.description.text.toString()
@@ -81,6 +93,12 @@ class PlacemarkActivity : AppCompatActivity() {
                 finish()
             }
         }
+        binding.placemarkLocation.setOnClickListener {
+            i("Set Location Pressed")
+            val launcherIntent = Intent(this, MapActivity::class.java)
+            mapIntentLauncher.launch(launcherIntent)
+        }
+
     }
 
     private fun showImagePicker(
@@ -98,23 +116,25 @@ class PlacemarkActivity : AppCompatActivity() {
 
     private fun registerImagePickerCallback() {
         imageIntentLauncher =
-            registerForActivityResult(ActivityResultContracts.StartActivityForResult())
-            { result ->
-                when(result.resultCode){
-                    RESULT_OK -> {
-                        if (result.data != null) {
-                            i("Got Result ${result.data!!.data}")
-                            placemark.image = result.data!!.data!!
-                            Picasso.get()
-                                .load(placemark.image)
-                                .into(binding.placemarkImage)
-                        } // end of if
-                    }
-                    RESULT_CANCELED -> { } else -> { }
+            registerForActivityResult(
+                ActivityResultContracts.StartActivityForResult()
+            ) { result ->
+                if (result.resultCode == RESULT_OK) {
+                    val imageUri = result.data?.data
+                        ?: return@registerForActivityResult
+
+                    placemark.image = imageUri
+
+                    Picasso.get()
+                        .load(placemark.image)
+                        .into(binding.placemarkImage)
+
+                    binding.chooseImage.setText(
+                        R.string.change_placemark_image
+                    )
                 }
             }
     }
-
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_placemark, menu)
         return true
@@ -129,5 +149,13 @@ class PlacemarkActivity : AppCompatActivity() {
         }
 
         return super.onOptionsItemSelected(item)
+    }
+    private fun registerMapCallback() {
+        mapIntentLauncher =
+            registerForActivityResult(
+                ActivityResultContracts.StartActivityForResult()
+            ) {
+                i("Map Loaded")
+            }
     }
 }
