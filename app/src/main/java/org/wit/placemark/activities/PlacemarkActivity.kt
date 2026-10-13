@@ -24,6 +24,7 @@ class PlacemarkActivity : AppCompatActivity() {
     private lateinit var mapIntentLauncher: ActivityResultLauncher<Intent>
 
     var placemark = PlacemarkModel()
+    var location = Location(52.245696, -7.139102, 15f)
     lateinit var app: MainApp
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -71,9 +72,11 @@ class PlacemarkActivity : AppCompatActivity() {
             }
         }
         binding.placemarkLocation.setOnClickListener {
-            val location = Location(52.245696, -7.139102, 15f)
+            i("Opening map with location: $location")
+
             val launcherIntent = Intent(this, MapActivity::class.java)
                 .putExtra("location", location)
+
             mapIntentLauncher.launch(launcherIntent)
         }
 
@@ -154,8 +157,19 @@ class PlacemarkActivity : AppCompatActivity() {
         mapIntentLauncher =
             registerForActivityResult(
                 ActivityResultContracts.StartActivityForResult()
-            ) {
-                i("Map Loaded")
+            ) { result ->
+                if (result.resultCode == RESULT_OK) {
+                    @Suppress("DEPRECATION")
+                    val returnedLocation =
+                        result.data?.getParcelableExtra<Location>("location")
+
+                    if (returnedLocation != null) {
+                        location = returnedLocation
+                        i("Received location: $location")
+                    }
+                } else {
+                    i("Map closed without returning a location")
+                }
             }
     }
 
