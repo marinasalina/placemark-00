@@ -14,6 +14,7 @@ import org.wit.placemark.databinding.ActivityPlacemarkBinding
 import org.wit.placemark.main.MainApp
 import org.wit.placemark.models.PlacemarkModel
 import android.net.Uri
+import org.wit.placemark.models.Location
 import timber.log.Timber.i
 
 class PlacemarkActivity : AppCompatActivity() {
@@ -70,8 +71,12 @@ class PlacemarkActivity : AppCompatActivity() {
             }
         }
         binding.placemarkLocation.setOnClickListener {
-            i ("Set Location Pressed")
+            val location = Location(52.245696, -7.139102, 15f)
+            val launcherIntent = Intent(this, MapActivity::class.java)
+                .putExtra("location", location)
+            mapIntentLauncher.launch(launcherIntent)
         }
+
         binding.btnAdd.setOnClickListener {
             placemark.title = binding.placemarkTitle.text.toString()
             placemark.description = binding.description.text.toString()
@@ -92,11 +97,6 @@ class PlacemarkActivity : AppCompatActivity() {
                 setResult(RESULT_OK)
                 finish()
             }
-        }
-        binding.placemarkLocation.setOnClickListener {
-            i("Set Location Pressed")
-            val launcherIntent = Intent(this, MapActivity::class.java)
-            mapIntentLauncher.launch(launcherIntent)
         }
 
     }
@@ -158,4 +158,5 @@ class PlacemarkActivity : AppCompatActivity() {
                 i("Map Loaded")
             }
     }
+
 }
