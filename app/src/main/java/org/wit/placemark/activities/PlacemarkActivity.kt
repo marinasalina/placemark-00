@@ -1,6 +1,7 @@
 package org.wit.placemark.activities
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -12,9 +13,8 @@ import com.squareup.picasso.Picasso
 import org.wit.placemark.R
 import org.wit.placemark.databinding.ActivityPlacemarkBinding
 import org.wit.placemark.main.MainApp
-import org.wit.placemark.models.PlacemarkModel
-import android.net.Uri
 import org.wit.placemark.models.Location
+import org.wit.placemark.models.PlacemarkModel
 import timber.log.Timber.i
 
 class PlacemarkActivity : AppCompatActivity() {
@@ -50,9 +50,10 @@ class PlacemarkActivity : AppCompatActivity() {
         if (intent.hasExtra("placemark_edit")) {
             edit = true
 
-            @Suppress("DEPRECATION")
             val passedPlacemark =
-                intent.extras?.getParcelable<PlacemarkModel>("placemark_edit")
+                intent.extras?.getParcelable<PlacemarkModel>(
+                    "placemark_edit"
+                )
 
             if (passedPlacemark == null) {
                 finish()
@@ -63,16 +64,24 @@ class PlacemarkActivity : AppCompatActivity() {
             binding.placemarkTitle.setText(placemark.title)
             binding.description.setText(placemark.description)
             binding.btnAdd.setText(R.string.save_placemark)
+
             if (placemark.image != Uri.EMPTY) {
                 Picasso.get()
                     .load(placemark.image)
                     .into(binding.placemarkImage)
 
-                binding.chooseImage.setText(R.string.change_placemark_image)
+                binding.chooseImage.setText(
+                    R.string.change_placemark_image
+                )
             }
         }
+
         binding.placemarkLocation.setOnClickListener {
-            i("Opening map with location: $location")
+            location = Location(
+                placemark.lat,
+                placemark.lng,
+                placemark.zoom
+            )
 
             val launcherIntent = Intent(this, MapActivity::class.java)
                 .putExtra("location", location)
@@ -101,7 +110,6 @@ class PlacemarkActivity : AppCompatActivity() {
                 finish()
             }
         }
-
     }
 
     private fun showImagePicker(
@@ -138,6 +146,34 @@ class PlacemarkActivity : AppCompatActivity() {
                 }
             }
     }
+
+    private fun registerMapCallback() {
+        mapIntentLauncher =
+            registerForActivityResult(
+                ActivityResultContracts.StartActivityForResult()
+            ) { result ->
+                when (result.resultCode) {
+                    RESULT_OK -> {
+                        if (result.data != null) {
+                            i("Got Location ${result.data.toString()}")
+
+                            location = result.data!!.extras
+                                ?.getParcelable<Location>("location")!!
+
+                            placemark.lat = location.lat
+                            placemark.lng = location.lng
+                            placemark.zoom = location.zoom
+
+                            i("Location == $location")
+                        }
+                    }
+
+                    RESULT_CANCELED -> {}
+                    else -> {}
+                }
+            }
+    }
+
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_placemark, menu)
         return true
@@ -153,24 +189,4 @@ class PlacemarkActivity : AppCompatActivity() {
 
         return super.onOptionsItemSelected(item)
     }
-    private fun registerMapCallback() {
-        mapIntentLauncher =
-            registerForActivityResult(
-                ActivityResultContracts.StartActivityForResult()
-            ) { result ->
-                if (result.resultCode == RESULT_OK) {
-                    @Suppress("DEPRECATION")
-                    val returnedLocation =
-                        result.data?.getParcelableExtra<Location>("location")
-
-                    if (returnedLocation != null) {
-                        location = returnedLocation
-                        i("Received location: $location")
-                    }
-                } else {
-                    i("Map closed without returning a location")
-                }
-            }
-    }
-
 }
